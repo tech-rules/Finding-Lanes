@@ -33,7 +33,7 @@ The code for my perspective transform includes a function called `warper()`, whi
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
 Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
-![](readme_images/polyfit.png?raw=true)   
+![](readme_images/polyfit_nohist.png?raw=true)   
 
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
