@@ -6,9 +6,14 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from moviepy.editor import VideoFileClip
 
-
-def th_bin(img, s_th=(170, 255), x_th=(20, 100)):
+def th_bin(img, s_th=(170, 255), x_th=(20, 100), rg_th=(120, 255)):
     img = np.copy(img)
+    r_channel = img[:, :, 0]
+    r_binary = np.zeros_like(r_channel)
+    r_binary[(r_channel >= rg_th[0]) & (r_channel <= rg_th[1])] = 1
+    g_channel = img[:, :, 1]
+    g_binary = np.zeros_like(g_channel)
+    g_binary[(g_channel >= rg_th[0]) & (g_channel <= rg_th[1])] = 1
     # Prepare thresholded binary for S-Channel
     hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
     s_channel = hls[:, :, 2]
@@ -23,7 +28,7 @@ def th_bin(img, s_th=(170, 255), x_th=(20, 100)):
     sxbinary[(scaled_sobel >= x_th[0]) & (scaled_sobel <= x_th[1])] = 1
     # Combine the two binary thresholds
     combined_binary = np.zeros_like(sxbinary)
-    combined_binary[(s_binary == 1) | (sxbinary == 1)] = 1
+    combined_binary[((r_binary == 1) & (g_binary == 1) & ((s_binary == 1) | (sxbinary == 1)))] = 1
 
     return combined_binary
 
@@ -39,29 +44,41 @@ class Line():
         self.fit = None
         self.curv = None
         self.x = None
+        self.frame_count = 0
 
 
-def gen_fit(img, start_x, line, win_h=80, win_w=100):
+def gen_fit(img, start_x, line, win_h=40, win_w=100, margin=50):
     ym_per_pix = 3 / 64  # meters per pixel in y dimension
     xm_per_pix = 3.7 / 640  # meteres per pixel in x dimension
 
     y_size = img.shape[0]
-    num_stripes = int(y_size / win_h)
-    mask = np.zeros_like(img)
-    median = start_x
-    for i in range(num_stripes):
-        y_li = y_size - (i + 1) * win_h
-        y_ri = y_li + win_h
-        x_li = max(0, (median - win_w))
-        x_ri = min(img.shape[1], (median + win_w))
-        mask[y_li:y_ri, x_li:x_ri] = np.ones((win_h, x_ri - x_li))
-        win = img[y_li:y_ri, x_li:x_ri]
-        win_ones = np.where(win == 1)
-        if (len(win_ones[1]) > 1):
-            median = int(np.median(win_ones[1])) + x_li
 
-    masked_img = cv2.bitwise_and(img, mask)
-    masked_ones = np.where(masked_img == 1)
+    if (line.frame_count < 10):
+        line.frame_count += 1
+        num_stripes = int(y_size / win_h)
+        mask = np.zeros_like(img)
+        median = start_x
+        for i in range(num_stripes):
+            y_li = y_size - (i + 1) * win_h
+            y_ri = y_li + win_h
+            x_li = max(0, (median - win_w))
+            x_ri = min(img.shape[1], (median + win_w))
+            mask[y_li:y_ri, x_li:x_ri] = np.ones((win_h, x_ri - x_li))
+            win = img[y_li:y_ri, x_li:x_ri]
+            win_ones = np.where(win == 1)
+            if (len(win_ones[1]) > 1):
+                median = int(np.median(win_ones[1])) + x_li
+            masked_img = cv2.bitwise_and(img, mask)
+            masked_ones = np.where(masked_img == 1)
+    else:
+        nonzero = img.nonzero()
+        nonzeroy = np.array(nonzero[0])
+        nonzerox = np.array(nonzero[1])
+        lane_inds = ((nonzerox > (line.fit[0] * (nonzeroy ** 2) + line.fit[1] * nonzeroy + line.fit[2] - margin)) & \
+                     (nonzerox < (line.fit[0] * (nonzeroy ** 2) + line.fit[1] * nonzeroy + line.fit[2] + margin)))
+        lanex = nonzerox[lane_inds]
+        laney = nonzeroy[lane_inds]
+        masked_ones = [laney, lanex]
 
     if (len(masked_ones[0]) > 5000):
         line.fit = np.polyfit(masked_ones[0], masked_ones[1], 2)
@@ -69,11 +86,11 @@ def gen_fit(img, start_x, line, win_h=80, win_w=100):
         line.curv = ((1 + (2 * fit_cr[0] * y_size + fit_cr[1]) ** 2) ** 1.5) / np.absolute(2 * fit_cr[0])
         line.x = line.fit[0] * y_size ** 2 + line.fit[1] * y_size + line.fit[2]
 
-
 def process_image(img):
     global mtx, dist, M, Minv
     global left_line, right_line
     undist = cv2.undistort(img, mtx, dist, None, mtx)
+
     binary = th_bin(undist)
     warped = warp(binary, M)
 
@@ -123,6 +140,17 @@ def process_image(img):
     cv2.putText(result, "Radius of curvature = {:.0f} m".format(average_curvature), (50, 50), font, 1, color, 2)
     cv2.putText(result, "Distance from center = {:.2f} m".format(center_dist), (50, 90), font, 1, color, 2)
 
+    # Diagnostics
+    '''
+    diagScreen = np.zeros((720, 1600, 3), dtype=np.uint8)
+    diagScreen[0:720, 0:1280] = result
+    binary_stack = np.dstack((binary, binary, binary))
+    diagScreen[0:240, 1280:1600] = cv2.resize(255*binary_stack, (320, 240), interpolation=cv2.INTER_AREA)
+    warped_stack = np.dstack((warped, warped, warped))
+    diagScreen[240:480, 1280:1600] = cv2.resize(255*warped_stack, (320, 240), interpolation=cv2.INTER_AREA)
+    diagScreen[480:720, 1280:1600] = cv2.resize(color_warp, (320, 240), interpolation=cv2.INTER_AREA)
+    return diagScreen
+    '''
     return result
 
 
