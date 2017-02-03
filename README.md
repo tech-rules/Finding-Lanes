@@ -1,4 +1,4 @@
-## Advanced lane detection algorithm using OpenCV
+## Advanced lane detection using OpenCV
 The goals of this project are the following:
 * Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
 * Apply a distortion correction to raw images.
@@ -12,17 +12,31 @@ The goals of this project are the following:
 ###Camera Calibration
 
 ####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
-
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/example.ipynb". 
-
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. 
-
-Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.
-
+The code for this step is contained in the second cell of IPython notebook [Camera_Undistort.ipynb](Camera_Undistort.ipynb). 
+Most of the calibration images in the camera_cal/ directory have 9 corners along X-axis and 6 corners along Y-axis. I start by preparing "object points (objp)", which will be the (x, y, z) coordinates of the chessboard corners with 9 X-corners and 6 Y-corners. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.
+```python
+# Prepare objectpoints
+NUM_XCOR = 9
+NUM_YCOR = 6
+objp = np.zeros((NUM_YCOR*NUM_XCOR,3), np.float32)
+objp[:,:2] = np.mgrid[0:NUM_XCOR, 0:NUM_YCOR].T.reshape(-1,2)
+```
 Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+```python
+for fname in images:
+    img = cv2.imread(fname)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+    # Find the chessboard corners
+    ret, corners = cv2.findChessboardCorners(gray, (NUM_XCOR, NUM_YCOR), None)
 
+    # If found, add object points, image points
+    if ret == True:
+        img_size = (img.shape[1], img.shape[0])
+        objpoints.append(objp)
+        imgpoints.append(corners)
+```
+I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the calibration images using the `cv2.undistort()` function in the third code cell of [Camera_Undistort.ipynb](Camera_Undistort.ipynb). One example result is:
 ![](readme_images/undistort.png?raw=true)   
 
 ###Pipeline (single images)
