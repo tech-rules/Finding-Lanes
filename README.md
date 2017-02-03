@@ -1,4 +1,15 @@
-# Advanced lane detection algorithm using OpenCV
+## Advanced lane detection algorithm using OpenCV
+
+The goals / steps of this project are the following:
+
+* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
+* Apply a distortion correction to raw images.
+* Use color transforms, gradients, etc., to create a thresholded binary image.
+* Apply a perspective transform to rectify binary image ("birds-eye view").
+* Detect lane pixels and fit to find the lane boundary.
+* Determine the curvature of the lane and vehicle position with respect to center.
+* Warp the detected lane boundaries back onto the original image.
+* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
 ###Camera Calibration
 
@@ -22,7 +33,8 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.
+
+I used a combination of color and gradient thresholds to generate a binary image. You can check my steps in the function `def th_bin()` in [Pipeline.ipynb](Pipeline.ipynb). Here's an example of my output for this step.
 ![](readme_images/binary.png?raw=true)   
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
