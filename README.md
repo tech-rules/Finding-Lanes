@@ -49,7 +49,8 @@ pickle.dump( dist_pickle, open( "camera_dist.p", "wb" ) )
 ###Pipeline (single images)
 
 ####1. Provide an example of a distortion-corrected image.
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
+Distortion-corrected versions of the test images can be found in [output_images](output_images). Here is one example as a reference (undistorted_test1):
+![](output_images/undistorted_tes11.jpg?raw=true)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
