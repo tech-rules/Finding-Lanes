@@ -1,7 +1,5 @@
 ## Advanced lane detection algorithm using OpenCV
-
-The goals / steps of this project are the following:
-
+The goals of this project are the following:
 * Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
 * Apply a distortion correction to raw images.
 * Use color transforms, gradients, etc., to create a thresholded binary image.
@@ -34,10 +32,16 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image. You can check my steps in the function `def th_bin()` in [Pipeline.ipynb](Pipeline.ipynb). Here's an example of my output for this step.
+I used a combination of color and gradient thresholds to generate a binary image. You can check my steps in the function `def th_bin()` in the second cell of [Pipeline.ipynb](Pipeline.ipynb). Here's an example of my output for this step.
 ![](readme_images/binary.png?raw=true)   
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+
+I performed perspective transform using OpenCV's `warpPerspective()` function. The transformation matrix for `warpPerspective()` was generated using `getPerspectiveTransform()` with the following source and destination points:
+```
+src = np.float32([[596, 450], [210, 719], [1100, 719], [685, 450]])
+dst = np.float32([[310, 120], [310, 719], [1000, 719], [1000, 120]])
+```
 
 The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
 ![](readme_images/perspective.png?raw=true)   
