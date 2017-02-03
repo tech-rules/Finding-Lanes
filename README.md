@@ -38,6 +38,13 @@ for fname in images:
 ```
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the calibration images using the `cv2.undistort()` function in the third code cell of [Camera_Undistort.ipynb](Camera_Undistort.ipynb). One example result is:
 ![](readme_images/undistort.png?raw=true)   
+Finally, the result of the camera calibration (camera matrix and distortion coefficients) are then stored in a pickle file for later use in the image and video pipelines.
+```python
+dist_pickle = {}
+dist_pickle["mtx"] = mtx
+dist_pickle["dist"] = dist
+pickle.dump( dist_pickle, open( "camera_dist.p", "wb" ) )
+```
 
 ###Pipeline (single images)
 
