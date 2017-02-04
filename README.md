@@ -64,22 +64,57 @@ I performed perspective transform using OpenCV's `warpPerspective()` function. T
 src = np.float32([[596, 450], [210, 719], [1100, 719], [685, 450]])
 dst = np.float32([[310, 120], [310, 719], [1000, 719], [1000, 120]])
 ```
-The code for my perspective transform includes a function called `warp()`, which appears in the 2nd code cell of [Perspective_Transform.ipynb](Perspective_Transform.ipynb).  The `warp()` function takes as inputs an image (`img`) and transformation matrix(`M`). Here is the result of perspective transformation with the above chosen source and destination  points:
+The resulting transformation matrix (and inverse transformation matrix) were saved in a pickle file for use with the image and video pilelines.
+```python
+# Create matrices for the transforma nd inverse transform
+M = cv2.getPerspectiveTransform(src, dst)
+Minv = cv2.getPerspectiveTransform(dst, src)
+
+# Save M and Minv in a pickle file
+Mat_pickle = {}
+Mat_pickle["M"] = M
+Mat_pickle["Minv"] = Minv
+pickle.dump(Mat_pickle, open( "M_and_Minv.p", "wb" ) )
+```
+Perspective transformation in my code is performed by a function called `warp()`, which is in the 2nd code cell of [Perspective_Transform.ipynb](Perspective_Transform.ipynb).  The `warp()` function takes as inputs an image (`img`) and transformation matrix(`M`) and returns the perspective transformed image by calling the OpenCV function `warpPerspective()`. Here is the result of perspective transformation with the above chosen source and destination  points:
 ![](readme_images/perspective.png?raw=true)   
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Line() class
+First 10 frames : histogram of thresholded perspective transformed image, peak detect, sliding window up
+Subsequent frames : detect in the window around previous frame lines
+
+Nonzero points (x and y) in the masked region, passed on to polyfit()
+In function gen_fit() of video_pipeline.py. Line numbers ...
+Example result:
 ![](readme_images/polyfit_nohist.png?raw=true)   
 
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
+meters per pixel in x and y dimensions
+fit another polynomial with scaled values of x and y
+get the value of X for the polynomial intercept at bottom edge
+calculate the derivative value for this intercept
+take average of left and right curvatures
+
+difference between center of image and center of X intercepts, converted from pixels to meters.
+
 I did this in lines # through # in my code in `my_other_file.py`
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+yval vector
+left_fitx, right_ftx
+OpenCV fillPoly()
+inverse perspective transform using Minv and `warp()` function
+addWeighted()
+Finally putText()
+
+I implemented this step in lines # through # in my code in `video_pipeline.py` in the function `process_image()`.  
+
+Here is an example of my result on a test image:
 ![](readme_images/pipeline.png?raw=true)   
 
 ###Pipeline (video)
