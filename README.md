@@ -91,14 +91,12 @@ I used two different mechanisms in order to find the pixels associated with the 
 * Finally `np.polyfit()` function is used to fit a second order curve to the detected lane-line pixels.
 
 For the subsequent frames (after the initial 10 frames) the following steps are used:
-* Create a window 
+* Create a window of +/- 100 pixels around the lane-lines in the previous frame
+* Use this window as the region-of-interest for the current frame and detect non-zero pixels
+* Same as above, use `np.polyfit()` function and fit a second order curve as lane-line
 
-Line() class
-First 10 frames : histogram of thresholded perspective transformed image, peak detect, sliding window up
-Subsequent frames : detect in the window around previous frame lines
+Line() class. In function gen_fit() of video_pipeline.py. Line numbers ...
 
-Nonzero points (x and y) in the masked region, passed on to polyfit()
-In function gen_fit() of video_pipeline.py. Line numbers ...
 Example result:
 ![](readme_images/polyfit_nohist.png?raw=true)   
 
