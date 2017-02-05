@@ -88,26 +88,25 @@ I used two different mechanisms in order to find the pixels associated with the 
 * The image is divided into multiple stripes and an upward sliding window is idenatified for each stripe
 * The starting bottom window is around the left and right peaks of histogram, and each subsequent window location, as we traverse up the stripes, is based upon the median non-zero pixel location in the previous window
 * As you reach to the top stripe, these windows cumulatively create a mask, and non-zero pixels within this mask are used as the detected lane-line pixels
-* Finally `np.polyfit()` function is used to fit a second order curve to the detected lane-line pixels.
+* Finally `np.polyfit()` function is used to fit a second order curve to the detected lane-line pixels
 
 For the subsequent frames (after the initial 10 frames) the following steps are used:
 * Create a window of +/- 100 pixels around the lane-lines in the previous frame
 * Use this window as the region-of-interest for the current frame and detect non-zero pixels
-* Same as above, use `np.polyfit()` function and fit a second order curve as lane-line
+* Same as above, use `np.polyfit()` function to fit a second order curve to the detected lane-line pixels
+* I defined a `Line()` class to keep track of previous polyfit values, curvature, x-intercept and frame count
+* left_line and right_light are the two objects of the `Line()` class in [video_pipeline.py](video_pipeline.py)
 
-Line() class. In function gen_fit() of video_pipeline.py. Line numbers ...
-
-Example result:
+An example result on a test image, after fitting the polynomials for right nd left lines:
 ![](readme_images/polyfit_nohist.png?raw=true)   
-
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-meters per pixel in x and y dimensions
-fit another polynomial with scaled values of x and y
-get the value of X for the polynomial intercept at bottom edge
-calculate the derivative value for this intercept
-take average of left and right curvatures
+I first estimated the meters-per-pixel (in the perspective transformed straight-lines image) based upon the following facts:
+* The lane is about 3.7 meters wide (for calculating meters-per-pixel in X-direction)
+* Each dashed lines are about 3 meters long (for calculating meters-per-pixel in Y-direction)
+
+I then fit another set of polynomials with lane detected X and Y values converted to meters. The coefficients of these polynomials were used to calculate the left and right curvature (at the bottom points) using the formula given in [radius of curvature link](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). The two curvatures were then averaged and displayed on the frame image using OpenCV `putText()` function.
 
 difference between center of image and center of X intercepts, converted from pixels to meters.
 
