@@ -112,15 +112,7 @@ For calculating the position of the vehicle with respect to center, I assumed th
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-yval vector
-left_fitx, right_ftx
-OpenCV fillPoly()
-inverse perspective transform using Minv and `warp()` function
-addWeighted()
-
-I implemented this step in lines # through # in my code in `video_pipeline.py` in the function `process_image()`.  
-
-Here is an example of my result on a test image:
+OpenCV `fillPoly()` function was used to plot and fill (with green color) the area between the detected lane-lines. The resulting image was perspective transformed back to the original car view using Minv and `warp()` function. OpenCV function `addWeighted()` was then used to blend the original undistorted image with the lane-drawn image and returned as the result of `process_image()` function in [video_pipeline.py](video_pipeline.py). Here is an example of my result on a test image:
 ![](readme_images/pipeline.png?raw=true)   
 
 ###Pipeline (video)
