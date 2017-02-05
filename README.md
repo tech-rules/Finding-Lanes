@@ -97,7 +97,7 @@ For the subsequent frames (after the initial 10 frames) the following steps are 
 * I defined a `Line()` class to keep track of previous polyfit values, curvature, x-intercept and frame count
 * left_line and right_light are the two objects of the `Line()` class in [video_pipeline.py](video_pipeline.py)
 
-An example result on a test image, after fitting the polynomials for right nd left lines:
+An example result on a test image, after fitting the polynomials for right and left lines:
 ![](readme_images/polyfit_nohist.png?raw=true)   
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
