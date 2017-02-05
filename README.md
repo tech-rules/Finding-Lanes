@@ -106,11 +106,9 @@ I first estimated the meters-per-pixel (in the perspective transformed straight-
 * The lane is about 3.7 meters wide (for calculating meters-per-pixel in X-direction)
 * Each dashed lines are about 3 meters long (for calculating meters-per-pixel in Y-direction)
 
-I then fit another set of polynomials with lane detected X and Y values converted to meters. The coefficients of these polynomials were used to calculate the left and right curvature (at the bottom points) using the formula given in [radius of curvature link](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). The two curvatures were then averaged and displayed on the frame image using OpenCV `putText()` function.
+I then fit another set of polynomials with lane detected X and Y values converted to meters. The coefficients of these left and right "world space" polynomials were used to calculate the left and right curvature (at the bottom points) using the formula given in [radius of curvature link](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). The two curvatures were then averaged and displayed on the frame image using OpenCV `putText()` function.
 
-difference between center of image and center of X intercepts, converted from pixels to meters.
-
-I did this in lines # through # in my code in `my_other_file.py`
+For calculating the position of the vehicle with respect to center, I assumed that the camera is mounted at the center of the car. So, the distance between the center of the frame-image and average of the the bottom-intercepts of left and right lanes, when converted from pixels to meters, gives us an estiamte of the position of the vehicle. this arithmetic is performed in function `process_image()` of [vedio_pipeline.py](video_pipeline.py), where variable `center_dist` is calculated.
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
