@@ -81,7 +81,7 @@ Perspective transformation in my code is performed by a function called `warp()`
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-I used two different mechanisms in order to find the pixels associated with the lane-lines. For the first 10 frames, I used the following steps (lines 96-113 of [video_pipeline.py](video_pipeline.py)):
+I used two different mechanisms in order to find the pixels associated with the lane-lines. For the first 10 frames, I used the following steps (line 96-113 in [video_pipeline.py](video_pipeline.py)):
 * Take a histogram of bottom half of the thresholded binary and perspective transformed image
 * Find the peaks of left-half and right-half of the histogram
 * These peak  locations become the starting points at the bottom of the image
