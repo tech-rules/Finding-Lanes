@@ -81,7 +81,7 @@ Perspective transformation in my code is performed by a function called `warp()`
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-I used two different mechanisms in order to find the pixels associated with the lane-lines. For the first 10 frames, I used the following steps:
+I used two different mechanisms in order to find the pixels associated with the lane-lines. For the first 10 frames, I used the following steps (lines 96-113 of [video_pipeline.py](video_pipeline.py)):
 * Take a histogram of bottom half of the thresholded binary and perspective transformed image
 * Find the peaks of left-half and right-half of the histogram
 * These peak  locations become the starting points at the bottom of the image
@@ -90,7 +90,7 @@ I used two different mechanisms in order to find the pixels associated with the 
 * As you reach to the top stripe, these windows cumulatively create a mask, and non-zero pixels within this mask are used as the detected lane-line pixels
 * Finally `np.polyfit()` function is used to fit a second order curve to the detected lane-line pixels
 
-For the subsequent frames (after the initial 10 frames) the following steps are used:
+For the subsequent frames (after the initial 10 frames) the following steps are used (line 115-123 in [video_pipeline.py](video_pipeline.py)):
 * Create a window of +/- 100 pixels around the lane-lines in the previous frame
 * Use this window as the region-of-interest for the current frame and detect non-zero pixels
 * Same as above, use `np.polyfit()` function to fit a second order curve to the detected lane-line pixels
@@ -106,9 +106,9 @@ I first estimated the meters-per-pixel (in the perspective transformed straight-
 * The lane is about 3.7 meters wide (for calculating meters-per-pixel in X-direction)
 * Each dashed lines are about 3 meters long (for calculating meters-per-pixel in Y-direction)
 
-I then fit another set of polynomials with lane detected X and Y values converted to meters. The coefficients of these left and right "world space" polynomials were used to calculate the left and right curvature (at the bottom points) using the formula given in [radius of curvature link](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). The two curvatures were then averaged and displayed on the frame image using OpenCV `putText()` function.
+I then fit another set of polynomials with lane detected X and Y values converted to meters. The coefficients of these left and right "world space" polynomials were used to calculate the left and right curvature (at the bottom points) using the formula given in [radius of curvature link](http://www.intmath.com/applications-differentiation/8-radius-curvature.php). The two curvatures were then averaged and displayed on the frame image using OpenCV `putText()` function. You can find this code in (line 128-129, and 175 in [video_pipeline.py](video_pipeline.py)).
 
-For calculating the position of the vehicle with respect to center, I assumed that the camera is mounted at the center of the car. So, the distance between the center of the frame-image and average of the the bottom-intercepts of left and right lanes, when converted from pixels to meters, gives us an estimate of the position of the vehicle. this arithmetic is performed in function `process_image()` of [video_pipeline.py](video_pipeline.py), where variable `center_dist` is calculated.
+For calculating the position of the vehicle with respect to center, I assumed that the camera is mounted at the center of the car. So, the distance between the center of the frame-image and average of the the bottom-intercepts of left and right lanes, when converted from pixels to meters, gives us an estimate of the position of the vehicle. this arithmetic is performed in function `process_image()` of [video_pipeline.py](video_pipeline.py), where variable `center_dist` is calculated (line 176-177).
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
@@ -126,5 +126,5 @@ I have added my final video output to this github repo. The link is:
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-This was a great project for me to become familiar with the image processing and transformation techniques avaialable to us. The main challenge that I faced was trying to find color and gradient thresholds that work most of the time. Compared to the deep learning approach where the features and parameters are learned during training, the approach in this project was more of feature engineering. Given the limited amount of time I had, my parameter selection, though it worked on the test images and project video, it is unlikely to generalize to more complex cases e.g. different lighting conditions and shadows, roads with uphill or downhill slopes, and extreme curves.
+This was a great project for me to become familiar with the image processing and transformation techniques avaialable to us. The main challenge that I faced was trying to find color and gradient thresholds that work most of the time. Compared to the deep learning approach where the features and parameters are learned during training, the approach in this project was more of feature engineering. Given the limited amount of time I had, my parameter selection, though it worked on the test images and project video, it is unlikely to generalize to more complex cases e.g. different lighting conditions and shadows, roads with uphill or downhill slopes, and extremely sharp turns. In order to make the lane detection more robust and more "genralized" I believe a deep learning appraoch would be more suited. Deep learning approach will require much more data during training than what we had in this project, but this kind of data is becoming more and more easily avialable now.
 
