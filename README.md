@@ -126,5 +126,5 @@ I have added my final video output to this github repo. The link is:
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-This was a great project for me to become familiar with the image processing and transformation techniques avaialable to us. The main challenge that I faced was tweaking of multitude of parameters.
+This was a great project for me to become familiar with the image processing and transformation techniques avaialable to us. The main challenge that I faced was trying to find color and gradient thresholds that work most of the time. Compared to the deep learning approach 
 
