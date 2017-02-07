@@ -126,5 +126,5 @@ I have added my final video output to this github repo. The link is:
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-This was a great project for me to become familiar with the image processing and transformation techniques avaialable to us. The main challenge that I faced was trying to find color and gradient thresholds that work most of the time. Compared to the deep learning approach 
+This was a great project for me to become familiar with the image processing and transformation techniques avaialable to us. The main challenge that I faced was trying to find color and gradient thresholds that work most of the time. Compared to the deep learning approach where the features and parameters are learned during training, the approach in this project was more of feature engineering. Given the limited amount of time I had, my parameter selection, though it worked on the test images and project video, it is unlikely to generalize to more complex cases e.g. different lighting conditions and shadows, roads with uphill or downhill slopes, and extreme curves.
 
